@@ -1,0 +1,17 @@
+{
+    "accounts": [
+        {
+            "account": "production",
+            "security-group": ["sg-0324831dc7b31794e"]
+        },
+        {
+            "account": "utilities",
+            "security-group": ["sg-0b8aeceb3556823cb","sg-0ff8671a814811156"]
+        },
+        {
+            "account": "staging",
+            "security-group": ["sg-00d7e17b61061fdc9"]
+        }
+    ],
+    "url": "nat.travisci.net"
+}
