@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 )
@@ -20,18 +19,19 @@ type Account struct {
 }
 
 // TODO: Add condition to check for existence of file, if not then create new security groups in each account
-func parseConfig() (accounts Accounts) {
+func parseConfig() (*Accounts, error) {
 	file, err := os.Open("config.json")
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 	defer file.Close()
 	byteValue, _ := ioutil.ReadAll(file)
-	if err2 := json.Unmarshal([]byte(byteValue), &accounts); err2 != nil {
+	accounts := &Accounts{}
+	if err2 := json.Unmarshal([]byte(byteValue), accounts); err2 != nil {
 		panic(err2)
 	}
 	// fmt.Printf("URL: "+"%s\n", accounts.URL)
-	return accounts
+	return accounts, nil
 }
 
 func getIps(url Accounts) string {
