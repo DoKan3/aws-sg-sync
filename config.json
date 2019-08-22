@@ -2,15 +2,15 @@
     "accounts": [
         {
             "account": "production",
-            "security-group": ["sg-0324831dc7b31794e"]
+            "security-group": ["sg-33333444445555"]
         },
         {
-            "account": "utilities",
-            "security-group": ["sg-0b8aeceb3556823cb","sg-0ff8671a814811156"]
+            "account": "development",
+            "security-group": ["sg-035435345r3rfsd","sg-0rbgvd5w3efgadsg"]
         },
         {
             "account": "staging",
-            "security-group": ["sg-00d7e17b61061fdc9"]
+            "security-group": ["sg-00d7e17sdgfvzdfgvd"]
         }
     ],
     "url": "nat.travisci.net"
