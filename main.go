@@ -50,8 +50,21 @@ func getIps(url string) []string {
 	return s
 }
 
+func processAccount(acct Account, ips []string) {
+	for _, a := range acct.Account {
+		fmt.Println(a)
+	}
+}
+
 func main() {
 	config, _ := parseConfig()
-	url := config.URL
-	fmt.Println(getIps(url))
+	// url := config.URL
+	// ips := getIps(url)
+
+	for _, acct := range config.Accounts {
+		for _, a := range acct.Account {
+			fmt.Println(a)
+		}
+		// processAccount(acct, ips)
+	}
 }
