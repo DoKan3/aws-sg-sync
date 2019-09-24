@@ -62,9 +62,10 @@ func main() {
 	// ips := getIps(url)
 
 	for _, acct := range config.Accounts {
-		for _, a := range acct.Account {
-			fmt.Println(a)
-		}
+		fmt.Println(acct)
+		// for _, sg := range acct.SecurityGroup {
+		// 	fmt.Println(sg)
+		// }
 		// processAccount(acct, ips)
 	}
 }
