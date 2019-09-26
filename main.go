@@ -69,3 +69,10 @@ func main() {
 		// processAccount(acct, ips)
 	}
 }
+
+// TODO:
+// 1. Authentication with roles specified
+// 2. Get SGs listed
+// 3. For each SG compare IP rules against resolved IPs (set compare)
+// 4. Drop all rules if comparison set compare differs and upload current
+// 5. Get SGs again and output rules
