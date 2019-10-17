@@ -76,11 +76,7 @@ func main() {
 	config, _ := parseConfig()
 
 	for _, acct := range config.Accounts {
-		//fmt.Println(acct)
-		// for _, sg := range acct.SecurityGroup {
-		// 	fmt.Println(sg)
-		// }
-		// processAccount(acct, ips)
+
 		creds := getCreds(acct.Role)
 		svc := ec2.New(sess, &aws.Config{Credentials: creds})
 		fmt.Println(svc)
