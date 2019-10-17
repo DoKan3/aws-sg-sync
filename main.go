@@ -7,7 +7,16 @@ import (
 	"net"
 	"os"
 	"sort"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/service/s3"
+
+	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
+	"github.com/aws/aws-sdk-go/aws/session"
 )
+
+var sess = session.Must(session.NewSession())
 
 // Accounts struct for accounts and url objects
 type Accounts struct {
@@ -15,9 +24,10 @@ type Accounts struct {
 	URL      string    `json:"url"`
 }
 
-// Account struct for account & secuirty group IDs
+// Account struct for account & security group IDs
 type Account struct {
 	Account       string   `json:"account"`
+	Role          string   `json:"role"`
 	SecurityGroup []string `json:"security-group"`
 }
 
@@ -56,17 +66,24 @@ func processAccount(acct Account, ips []string) {
 	}
 }
 
+func getCreds(role string) *credentials.Credentials {
+	creds := stscreds.NewCredentials(sess, role)
+
+	return creds
+}
+
 func main() {
 	config, _ := parseConfig()
-	// url := config.URL
-	// ips := getIps(url)
 
 	for _, acct := range config.Accounts {
-		fmt.Println(acct)
+		//fmt.Println(acct)
 		// for _, sg := range acct.SecurityGroup {
 		// 	fmt.Println(sg)
 		// }
 		// processAccount(acct, ips)
+		creds := getCreds(acct.Role)
+		svc := s3.New(sess, &aws.Config{Credentials: creds})
+		fmt.Println(svc)
 	}
 }
 

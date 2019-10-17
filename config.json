@@ -2,14 +2,17 @@
     "accounts": [
         {
             "account": "production",
+            "role": "prod-role",
             "security-group": ["sg-33333444445555"]
         },
         {
             "account": "development",
+            "role": "dev-role",
             "security-group": ["sg-035435345r3rfsd","sg-0rbgvd5w3efgadsg"]
         },
         {
             "account": "staging",
+            "role": "staging-role",
             "security-group": ["sg-00d7e17sdgfvzdfgvd"]
         }
     ],
