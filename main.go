@@ -16,8 +16,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 )
 
-var sess = session.Must(session.NewSession())
-
 // Accounts struct for accounts and url objects
 type Accounts struct {
 	Accounts []Account `json:"accounts"`
@@ -40,8 +38,8 @@ func parseConfig() (*Accounts, error) {
 	defer file.Close()
 	byteValue, _ := ioutil.ReadAll(file)
 	accounts := &Accounts{}
-	if err2 := json.Unmarshal([]byte(byteValue), accounts); err2 != nil {
-		panic(err2)
+	if err := json.Unmarshal([]byte(byteValue), accounts); err != nil {
+		panic(err)
 	}
 	return accounts, nil
 }
@@ -95,22 +93,9 @@ func main() {
 
 	for _, acct := range config.Accounts {
 		result := getCreds(acct.Role)
-		// creds, err := getCreds(acct.Role)
-		// if err != nil {
-		// 	fmt.Println(err)
-		// } else {
-		// 	//svc := ec2.New(sess, &aws.Config{Credentials: creds})
-		fmt.Println(result)
-		// }
-	}
 
-	// result, _ := svc.DescribeSecurityGroups(&ec2.DescribeSecurityGroupsInput{
-	// 	GroupIds: aws.StringSlice(acct.SecurityGroup),
-	// })
-	// for _, group := range result.SecurityGroups {
-	// 	fmt.Println(group)
-	// }
-	//}
+		fmt.Println(result)
+	}
 }
 
 // TODO:
