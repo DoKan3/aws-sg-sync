@@ -9,8 +9,8 @@ import (
 	"sort"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go/aws/awserr"
+	"github.com/aws/aws-sdk-go/service/sts"
 
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -66,21 +66,51 @@ func processAccount(acct Account, ips []string) {
 	}
 }
 
-func getCreds(role string) *credentials.Credentials {
+func getCreds(role string) *sts.GetCallerIdentityOutput {
+	sess := session.Must(session.NewSession(&aws.Config{
+		Region: aws.String("us-east-1"),
+	}))
 	creds := stscreds.NewCredentials(sess, role)
+	svc := sts.New(sess, &aws.Config{Credentials: creds})
+	input := &sts.GetCallerIdentityInput{}
 
-	return creds
+	result, err := svc.GetCallerIdentity(input)
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			default:
+				fmt.Println(aerr.Error())
+			}
+		} else {
+			// Print the error, cast err to awserr.Error to get the Code and
+			// Message from an error.
+			fmt.Println(err.Error())
+		}
+	}
+	return result
 }
 
 func main() {
 	config, _ := parseConfig()
 
 	for _, acct := range config.Accounts {
-
-		creds := getCreds(acct.Role)
-		svc := ec2.New(sess, &aws.Config{Credentials: creds})
-		fmt.Println(svc)
+		result := getCreds(acct.Role)
+		// creds, err := getCreds(acct.Role)
+		// if err != nil {
+		// 	fmt.Println(err)
+		// } else {
+		// 	//svc := ec2.New(sess, &aws.Config{Credentials: creds})
+		fmt.Println(result)
+		// }
 	}
+
+	// result, _ := svc.DescribeSecurityGroups(&ec2.DescribeSecurityGroupsInput{
+	// 	GroupIds: aws.StringSlice(acct.SecurityGroup),
+	// })
+	// for _, group := range result.SecurityGroups {
+	// 	fmt.Println(group)
+	// }
+	//}
 }
 
 // TODO:
