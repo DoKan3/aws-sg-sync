@@ -10,6 +10,8 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/sts"
 
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
@@ -58,13 +60,7 @@ func getIps(url string) []string {
 	return s
 }
 
-func processAccount(acct Account, ips []string) {
-	for _, a := range acct.Account {
-		fmt.Println(a)
-	}
-}
-
-func getCreds(role string) *sts.GetCallerIdentityOutput {
+func getCreds(role string) (*string, *credentials.Credentials) {
 	sess := session.Must(session.NewSession(&aws.Config{
 		Region: aws.String("us-east-1"),
 	}))
@@ -85,6 +81,36 @@ func getCreds(role string) *sts.GetCallerIdentityOutput {
 			fmt.Println(err.Error())
 		}
 	}
+	return result.Arn, creds
+}
+
+func getSecurityGroups(creds *credentials.Credentials) *ec2.DescribeSecurityGroupsOutput {
+	sess := session.Must(session.NewSession(&aws.Config{
+		Region: aws.String("us-east-1"),
+	}))
+	svc := ec2.New(sess, &aws.Config{Credentials: creds})
+	input := &ec2.DescribeSecurityGroupsInput{
+		Filters: []*ec2.Filter{
+			{
+				Name: aws.String("tag:aws-sg-sync-test"),
+				Values: []*string{
+					aws.String(""),
+				},
+			},
+		},
+	}
+
+	result, err := svc.DescribeSecurityGroups(input)
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			default:
+				fmt.Println(aerr.Error())
+			}
+		} else {
+			fmt.Println(err.Error())
+		}
+	}
 	return result
 }
 
@@ -92,14 +118,13 @@ func main() {
 	config, _ := parseConfig()
 
 	for _, acct := range config.Accounts {
-		result := getCreds(acct.Role)
-
-		fmt.Println(result)
+		roleArn, creds := getCreds(acct.Role)
+		secGroup := getSecurityGroups(creds)
+		fmt.Println("Using Role: "+*roleArn, secGroup)
 	}
 }
 
 // TODO:
-// 1. Authentication with roles specified
 // 2. Get SGs listed
 // 3. For each SG compare IP rules against resolved IPs (set compare)
 // 4. Drop all rules if comparison set compare differs and upload current
