@@ -2,4 +2,4 @@
 
 ## Work in progress
 
-### Go utility for keeping AWS Security Groups up to date with specific URL
+### Go utility for keeping AWS Security Groups up to date with specific URLs
